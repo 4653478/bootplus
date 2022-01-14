@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.age.dao.AhUserDao">
+
+
+	<update id="updateUser" parameterType="com.age.entity.AhUserEntity">
+		update t_ahb_user
+		<set>
+			<if test="wxName != null">`wx_name` = #{wxName}, </if>
+			<if test="wxId != null">`wx_id` = #{wxId}, </if>
+			<if test="did != null">`did` = #{did}, </if>
+			<if test="loginTime != null">`login_time` = #{loginTime}, </if>
+			<if test="logoutTime != null">`logout_time` = #{logoutTime}, </if>
+			`create_time`=now()
+			<!--<if test="createTime != null">`create_time` = #{createTime}, </if>-->
+
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<delete id="deleteBatch">
+		delete from t_ahb_user where id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+		;
+
+	</delete>
+
+	
+	
+</mapper>

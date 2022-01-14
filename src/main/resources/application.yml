@@ -1,0 +1,194 @@
+custom:
+  datasource: #多数据源配置
+    dsr: #读写分离 - 读库
+      driverClassName: com.mysql.jdbc.Driver
+      password: 111111
+      url: jdbc:mysql://ip:port/dbname?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+      username: root
+    dsrw: #读写分离 - 写库
+      driverClassName: com.mysql.jdbc.Driver
+      password: 111111
+      url: jdbc:mysql://ip:port/dbname?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+      username: root
+mybatis-plus:
+  configuration:
+    cache-enabled: false
+    map-underscore-to-camel-case: true
+  global-config:
+    db-column-underline: true
+    field-strategy: 0
+    id-type: 0
+    refresh-mapper: true
+  mapper-locations: classpath:/mapper/*Dao.xml
+  typeAliasesPackage: com.age.entity
+seo:
+  author: age
+  description: AH相关后台
+  keywords: age
+server:
+  contextPath: ''
+  port: 8088
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  redis:
+    database: 1
+    host: 192.168.1.130
+    password: xxxxxxxx
+    pool:
+      max-active: 1000
+      max-idle: 100
+      max-wait: -1
+      min-idle: 1
+    port: 6379
+  profiles:
+    # 生产环境
+    active: prd
+    #    active: dev
+    cache:
+      type: redis
+      ehcache:
+        config: classpath:/ehcache-core.xml
+
+  aop:
+    auto: true
+    proxy-target-class: true
+  data:
+    elasticsearch:
+      cluster-name: wstro
+      cluster-nodes: 192.168.1.88:9300
+      local: false
+      properties:
+        path:
+          data: elasticsearch/data
+          home: target/elastic
+          logs: elasticsearch/logs
+        transport:
+          tcp:
+            connect_timeout: 120s
+      repositories:
+        enabled: true
+  datasource:
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    driverClassName: com.mysql.jdbc.Driver
+    filters: stat,wall,log4j
+    initialSize: 5
+    maxActive: 20
+    maxPoolPreparedStatementPerConnectionSize: 20
+    maxWait: 60000
+    minEvictableIdleTimeMillis: 300000
+    minIdle: 5
+    password: 111111
+    poolPreparedStatements: true
+    testOnBorrow: false
+    testOnReturn: false
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://ip:port/dbname?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+    username: root
+    validationQuery: SELECT 1 FROM DUAL
+  freemarker:
+    allow-request-override: false
+    cache: false
+    charset: UTF-8
+    content-type: text/html
+    expose-request-attributes: true
+    expose-session-attributes: true
+    request-context-attribute: rc
+    settings:
+      # freemarker.core.Configurable#setSetting
+      # freemarker.template.Configuration#setSetting
+      tag_syntax: auto_detect
+      number_format: 0.##
+    suffix: .ftl
+    check-template-location: true
+    template-loader-path: classpath:/WEB-INF/templates/
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    multipart:
+      maxFileSize: 10Mb
+      maxRequestSize: 10Mb
+
+  mail:
+    host: smtp.qq.com
+    password: '*******'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    username: 4653478@qq.com
+  messages:
+    encoding: UTF-8
+  resources:
+    static-locations: /statics
+xcx:
+  pay:
+    appid: wx111111
+    key: 111111
+    mchid: 111111
+
+
+
+
+management:
+  #  context-path: /monitor
+  security:
+    # 权限拦截
+    enabled: true
+
+security:
+  user:
+    name: admin
+    password: admin
+    role: admin
+  basic:
+    path: ${management.context-path:/monitor}/**
+    enabled: true
+
+################################### 程序自定义配置 ###################################
+
+application:
+  name: ahb  #@project.artifactId@
+  version: 1.0  #@project.version@
+  url: '' #@project.url@
+  description: '' #@project.description@
+  logs:
+    level: DEBUG
+    path: logs  #@project.basedir@/../logs
+  # 自定义线程池配置
+  thread-pool:
+    core-pool-size: 3
+    max-pool-size: 2000
+    queue-capacity: 200
+    keep-alive-seconds: 3000
+    thread-name-prefix: ${application.name:zhousiwei}-task-
+  mvc:
+    view-resolves:
+      - {urlPath: '/',viewName: 'redirect:/admin'}
+
+huawei:
+  obs:
+    endPoint: obs.cn-east-2.myhuaweicloud.com
+    ak: aaaaaa
+    sk: ssssss
+    bucketName: aaaaaa
+    fileUploadPath: ahb/uploadfiles/
+
+weixin:
+  appId: wx111111
+  appSecret: 111111
+  token: 111111
+  subscribe:
+    revisitTempId: 111111
+    chatMsgTempId: 111111
+
+aesencrypt:
+  key: 111111
+  iv: 111111

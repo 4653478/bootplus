@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="es_shiro" updateCheck="false">
+
+    <!--    <diskStore path="java.io.tmpdir"/>-->
+    <diskStore path="user.home"/>
+
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="3600"
+            overflowToDisk="true"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+    />
+
+    <!-- 登录记录缓存 锁定10分钟 -->
+    <cache name="passwordRetryCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="600" timeToLiveSeconds="600"
+           overflowToDisk="true" statistics="true">
+    </cache>
+
+    <!-- 身份验证缓存 锁定1小时 -->
+    <cache name="authentication_cache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="3600" timeToLiveSeconds="0"
+           overflowToDisk="true" statistics="true">
+    </cache>
+
+    <!-- 授权缓存 锁定1小时 -->
+    <cache name="authorization_cache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="3600" timeToLiveSeconds="0"
+           overflowToDisk="true" statistics="true">
+    </cache>
+
+    <!-- org/apache/shiro/cache/ehcache/ehcache.xml -->
+    <cache name="shiro-activeSessionCache"
+           maxElementsInMemory="10000"
+           overflowToDisk="true"
+           eternal="true"
+           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           diskPersistent="true"
+           diskExpiryThreadIntervalSeconds="600"/>
+
+    <cache name="org.apache.shiro.realm.text.PropertiesRealm-0-accounts"
+           maxElementsInMemory="1000"
+           eternal="true"
+           overflowToDisk="true"/>
+
+</ehcache>

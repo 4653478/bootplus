@@ -1,0 +1,773 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- spring boot 父节点依赖, 引入这个之后相关的引入就不需要添加version配置， spring boot会自动选择最合适的版本进行添加。 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.1.RELEASE</version>
+        <!--        <version>2.2.7.RELEASE</version>-->
+    </parent>
+
+    <!-- -->
+    <groupId>com.age</groupId>
+    <artifactId>ahb</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <!--<version>1.0.0.RELEASE</version>-->
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <url>https://github.com/age/ahb</url>
+    <description>基于SpringBoot + Shiro + MyBatisPlus的框架</description>
+
+    <properties>
+        <!-- 默认测试环境 -->
+        <package.environment>prd</package.environment>
+        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+        <!--<maven.build.timestamp.format>yyyyMMdd_HHmmss</maven.build.timestamp.format>-->
+        <lombok.version>1.18.10</lombok.version>
+        <hessian.version>4.0.38</hessian.version>
+        <kaptcha.version>0.0.9</kaptcha.version>
+        <commons-lang.version>3.5</commons-lang.version>
+        <commons-io.version>2.5</commons-io.version>
+        <!-- 在1.4.2之前的Apache Shiro，使用默认的“记住我”配置时，cookie可能会受到填充攻击。 -->
+        <shiro.version>1.6.0</shiro.version>
+        <!--        <mybatisplus-spring-boot-starter.version>3.3.0</mybatisplus-spring-boot-starter.version>-->
+        <mybatisplus-spring-boot-starter.version>2.1.9</mybatisplus-spring-boot-starter.version>
+        <!--<spring-log4j.version>1.3.5.RELEASE</spring-log4j.version>-->
+        <guava.version>29.0-jre</guava.version>
+        <jsoup.version>1.11.3</jsoup.version>
+        <httpclient.version>4.5.6</httpclient.version>
+        <druid.version>1.1.22</druid.version>
+
+        <spring.boot.dependencies.scope>provided</spring.boot.dependencies.scope>
+        <!-- Docker 插件 -->
+        <docker.repostory>com.age</docker.repostory>
+        <docker.registry.name>${project.artifactId}</docker.registry.name>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.locales>zh_CN</project.build.locales>
+    </properties>
+
+    <!--<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-releasetrain</artifactId>
+                <version>Ingalls-SR4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>-->
+
+    <dependencies>
+        <!-- 忽略自带的日志框架. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <!--<exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>-->
+
+                <!-- 解决循环继承导致栈溢出的问题 -->
+                <!--The class hierarchy being processed was [org.bouncycastle.asn1.ASN1Boolean->
+                org.bouncycastle.asn1.DERBoolean->org.bouncycastle.asn1.ASN1Boolean]-->
+                <exclusion>
+                    <groupId>bouncycastle</groupId>
+                    <artifactId>bcprov-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>bouncycastle</groupId>
+                    <artifactId>bctsp-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 在yml中读取pom.xml配置使用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <!-- https://github.com/4653478/fastjson-spring-boot-starter/ -->
+            <groupId>io.gitee.zhousiwei</groupId>
+            <artifactId>fastjson-spring-boot-starter</artifactId>
+            <version>8.8.8.RELEASE</version>
+            <!--<version>10.10.10.RELEASE</version>-->
+            <exclusions>
+                <exclusion>
+                    <!-- FastJson 1.2.60 以下版本 有重大漏洞 -->
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- FastJson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.60</version>
+        </dependency>
+
+        <!-- 应用监控Actuator -->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>-->
+
+        <!-- https://xz.aliyun.com/t/2233 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- 替换log4j为logback -->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+            <version>${spring-log4j.version}</version>
+        </dependency>-->
+
+        <!-- yaml解析类 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+
+        <!-- hessian -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>${hessian.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+            <version>5.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <!-- 解决报错：net.sf.ehcache.Ehcache.getStatistics()Lnet/sf/ehcache/statistics/StatisticsGateway -->
+        <!-- https://mvnrepository.com/artifact/net.sf.ehcache.internal/ehcache-core -->
+        <dependency>
+            <groupId>net.sf.ehcache.internal</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.10.5</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <!-- EhCache -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+
+        <!-- HTML解析器 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <!-- FreeMaker Tags -->
+        <dependency>
+            <groupId>net.mingsoft</groupId>
+            <artifactId>shiro-freemarker-tags</artifactId>
+            <version>1.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- google java lib -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <!-- 条形码、二维码生成 -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 验证码生成器 -->
+        <dependency>
+            <groupId>com.github.axet</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>${kaptcha.version}</version>
+        </dependency>
+        <!-- 图片缩略图 -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+        <!-- cglib代理 -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.2.5</version>
+        </dependency>
+
+        <!-- Testing Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- MySql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- MyBatis-Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatisplus-spring-boot-starter.version}</version>
+        </dependency>
+
+        <!-- Apache-Shiro -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <!-- shiro-redis -->
+        <!--<dependency>
+            <groupId>org.crazycake</groupId>
+            <artifactId>shiro-redis</artifactId>
+            <version>3.2.3</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-ehcache</artifactId>
+            <version>${shiro.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 包含支持UI模版（Velocity，FreeMarker，JasperReports）， 邮件服务， 脚本服务(JRuby)， 缓存Cache（EHCache），
+            任务计划Scheduling（quartz）。 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+
+        <!-- 这里指定打包的时候不再需要tomcat相关的包 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <!-- 使用IDEA如果报NoClassDefFoundError的错误，
+                请参考此文章进行解决：https://www.jianshu.com/p/7bbeb663f1c9 -->
+            <!-- Tomcat scope must be 'compile' when 'jar' packaging, or 'provided' when 'war' -->
+            <scope>${spring.boot.dependencies.scope}</scope>
+            <!--            <scope>compile</scope>-->
+        </dependency>
+
+        <!-- LomBok插件 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>esdk-obs-java</artifactId>
+            <version>[3.21.8,)</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <defaultGoal>package</defaultGoal>
+        <resources>
+            <resource>
+                <directory>${basedir}src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <!-- 资源根目录排除各环境的配置，使用单独的资源目录来指定 -->
+                <excludes>
+                    <exclude>conf/**</exclude>
+                </excludes>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>**/*.txt</include>
+                </includes>
+                <!-- 资源过滤功能 -->
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources/conf/${package.environment}</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <!-- 打包时将jsp文件拷贝到META-INF目录下(其实也可以直接放在`src/main/resources`目录下) -->
+            <resource>
+                <!-- 指定resources插件处理哪个目录下的资源文件 -->
+                <directory>${basedir}/src/main/webapp/</directory>
+                <!-- 千万不能加这个 -->
+                <!-- <targetPath>MATE-INF/resources</targetPath> -->
+                <!--注意此次必须要放在此目录下才能被访问到-->
+                <!-- <targetPath>META-INF/resources</targetPath> -->
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <!--单元测试时引用src/main/resources下的资源文件-->
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.xml</exclude>
+                    <exclude>**/*.yml</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <!-- <useDefaultDelimiters>true</useDefaultDelimiters> -->
+                    <delimiters>
+                        <delimiter>@</delimiter>
+                        <useDefaultDelimiters>false</useDefaultDelimiters>
+                    </delimiters>
+
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 覆盖原有文件 -->
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <!--<outputDirectory>${basedir}/target/classes</outputDirectory>-->
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources/conf/${package.environment}</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- 配置spring boot之maven插件 -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- fork : 如果没有该项配置，devtools不会起作用，即应用不会restart 【实测：可以不配置】 -->
+                    <fork>true</fork>
+                    <includeSystemScope>true</includeSystemScope>
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+                    <!--<mainClass>App</mainClass>
+                    <layout>JAR</layout>-->
+                    <!-- 注意：layout应设置为ZIP,不然后面会出现找不到类的错误. -->
+                    <includes>
+                        <!-- SpringBoot 项目瘦身 ->
+                         https://github.com/johnnian/Blog/issues/41 -->
+                        <include>
+                            <!-- -Dloader.path= -->
+                            <!--                            <groupId>nothing</groupId>-->
+                            <!--                            <artifactId>nothing</artifactId>-->
+                        </include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- 编译版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${maven.compiler.encoding}</encoding>
+                    <compilerArguments>
+                        <!-- <extdirs>${project.basedir}/src/main/webapp/WEB-INF/lib</extdirs> -->
+                    </compilerArguments>
+                    <!-- 是否跳过检测 -->
+                    <!--<compilerArgument>-Xlint:unchecked</compilerArgument>-->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <!-- https://github.com/spotify/docker-maven-plugin -->
+                <!-- docker:push 发布 -->
+                <!-- 运行命令 mvn clean package docker:build -DOCKER_HOST=http://localhost:38808 打包并生成docker镜像 -->
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <dockerHost>http://localhost:38808</dockerHost>
+                    <!--Dockerfile文件位置-->
+                    <dockerDirectory>${project.basedir}</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <imageName>${docker.repostory}/${docker.registry.name}/${project.artifactId}:${project.version}
+                    </imageName>
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                        <imageTag>latest</imageTag>
+                    </imageTags>
+                    <exposes>
+                        <expose>8080</expose>
+                    </exposes>
+                    <!-- optionally overwrite tags every time image is built with docker:build -->
+                    <forceTags>true</forceTags>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- 跳过测试阶段或者使用 `mvn clean package -Dmaven.test.skip=true` -->
+                    <skipTests>true</skipTests>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <!--<forkMode>once</forkMode>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>-->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <!-- Tomcat启动 直接访问http://localhost:8080/ -->
+                    <url>http://localhost/manager/ahb</url>
+                    <server>tomcat</server>
+                    <username>age</username>
+                    <password>jay</password>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <port>8080</port>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- maven打包的时候告诉maven不需要web.xml,否刚会报找不到web.xml错误 -->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.10.0</version>
+                <!--<executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                        <configuration>
+                            <addOutputDirectory>false</addOutputDirectory>
+                            <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+                            <formatPreferences>
+                                <pretty/>
+                            </formatPreferences>
+                        </configuration>
+                    </execution>
+                </executions>-->
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--                    <name>maven.build.timestamp</name>-->
+                    <name>current.time</name>
+                    <pattern>${maven.build.timestamp.format}</pattern>
+                    <timeZone>GMT+8</timeZone>
+                    <locale>zh_CN</locale>
+                    <fileSet/>
+                    <regex/>
+                    <source/>
+                    <value/>
+                </configuration>
+            </plugin>
+        </plugins>
+        <!--        <finalName>${project.artifactId}_${project.version}_${maven.build.timestamp}</finalName>-->
+        <!-- 自定义打包名称及时间戳 -->
+        <finalName>${project.artifactId}_${current.time}</finalName>
+    </build>
+
+    <profiles>
+        <!-- https://youtrack.jetbrains.com/issue/IDEA-107048#focus=streamItem-27-2380176.0-0 -->
+        <profile>
+            <!-- 测试无效 -->
+            <id>intellij-workaround</id>
+            <properties>
+                <spring.boot.dependencies.scope>compile</spring.boot.dependencies.scope>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 开发环境 -->
+            <id>dev</id>
+            <properties>
+                <package.environment>dev</package.environment>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 测试环境 -->
+            <id>stg</id>
+            <properties>
+                <package.environment>stg</package.environment>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 生产环境 -->
+            <id>prd</id>
+            <properties>
+                <package.environment>prd</package.environment>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- 依赖仓库-阿里云Maven仓库 -->
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun_nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <!-- 插件仓库-阿里云Maven仓库 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun_nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

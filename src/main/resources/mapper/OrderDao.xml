@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.age.dao.OrderDao">
+
+
+	<select id="queryOrdersLastMonth" resultType="com.age.entity.OrderEntity">
+		<![CDATA[
+		select id,prod_name,prod_desc,order_type,pay_money,pay_state,create_time from t_order where order_type=#{size} and `pay_state` = 91
+		and create_time>=DATE_FORMAT(DATE_ADD(now(),INTERVAL -1 MONTH),'%Y-%m-%d 00:00:00')  and create_time <= DATE_FORMAT(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d 00:00:00')
+				limit 10
+		]]>
+	</select>
+
+
+</mapper>
